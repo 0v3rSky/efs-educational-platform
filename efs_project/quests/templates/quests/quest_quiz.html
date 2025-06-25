@@ -1,0 +1,24 @@
+{% extends 'website/base.html' %}
+{% block title %}Мини-тест: {{ quest.title }}{% endblock %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4 bg-light" style="max-width: 700px; width: 100%; border-radius: 18px;">
+        <h2 class="fw-bold mb-4 text-dark">Мини-тест по квесту: {{ quest.title }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for q in questions %}
+                <div class="mb-4 p-3 bg-white rounded shadow-sm">
+                    <div class="fw-bold mb-2">{{ forloop.counter }}. {{ q.text }}</div>
+                    {% for ans in q.answers.all %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q_{{ q.id }}" id="a{{ ans.id }}" value="{{ ans.id }}">
+                            <label class="form-check-label" for="a{{ ans.id }}">{{ ans.text }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success btn-lg w-100 mt-3">Завершить тест</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

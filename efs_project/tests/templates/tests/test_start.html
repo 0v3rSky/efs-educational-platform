@@ -1,0 +1,188 @@
+{% extends 'website/base.html' %}
+
+{% block title %}Начало теста: {{ test.title }}{% endblock %}
+
+{% block content %}
+<style>
+    .test-start-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+    .test-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    .test-image {
+        width: 200px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    .test-info {
+        flex: 1;
+    }
+    .test-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    .test-description {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+    .test-meta {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .test-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+    }
+    .test-meta-item i {
+        color: #0d6efd;
+    }
+    .test-difficulty {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .difficulty-легкий {
+        background: #e3fcef;
+        color: #00a854;
+    }
+    .difficulty-средний {
+        background: #fff7e6;
+        color: #fa8c16;
+    }
+    .difficulty-сложный {
+        background: #fff1f0;
+        color: #f5222d;
+    }
+    .test-rules {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    .test-rules h3 {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    .test-rules ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .test-rules li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+        color: #666;
+    }
+    .test-rules li i {
+        color: #0d6efd;
+        margin-top: 3px;
+    }
+    .start-test-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #0d6efd;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .start-test-btn:hover {
+        background: #0b5ed7;
+        transform: translateY(-2px);
+    }
+    .start-test-btn i {
+        font-size: 20px;
+    }
+</style>
+
+<div class="container">
+    <div class="test-start-container">
+        <div class="test-header">
+            {% if test.image %}
+                <img src="{{ test.image.url }}" alt="{{ test.title }}" class="test-image">
+            {% endif %}
+            <div class="test-info">
+                <h1 class="test-title">{{ test.title }}</h1>
+                <p class="test-description">{{ test.description }}</p>
+                <div class="test-meta">
+                    <div class="test-meta-item">
+                        <i class="bi bi-clock"></i>
+                        <span>Время: {{ test.time_limit }} минут</span>
+                    </div>
+                    <div class="test-meta-item">
+                        <i class="bi bi-question-circle"></i>
+                        <span>Вопросов: {{ test.questions.count }}</span>
+                    </div>
+                    <div class="test-meta-item">
+                        <i class="bi bi-star"></i>
+                        <span>Очков: {{ test.points }}</span>
+                    </div>
+                    <span class="test-difficulty difficulty-{{ test.difficulty|lower }}">
+                        {{ test.difficulty }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-rules">
+            <h3>Правила прохождения теста:</h3>
+            <ul>
+                <li>
+                    <i class="bi bi-1-circle"></i>
+                    <span>На прохождение теста отводится {{ test.time_limit }} минут</span>
+                </li>
+                <li>
+                    <i class="bi bi-2-circle"></i>
+                    <span>Тест содержит {{ test.questions.count }} вопросов</span>
+                </li>
+                <li>
+                    <i class="bi bi-3-circle"></i>
+                    <span>После начала теста таймер нельзя остановить</span>
+                </li>
+                <li>
+                    <i class="bi bi-4-circle"></i>
+                    <span>За правильные ответы начисляются очки</span>
+                </li>
+                <li>
+                    <i class="bi bi-5-circle"></i>
+                    <span>После завершения теста вы увидите свой результат</span>
+                </li>
+            </ul>
+        </div>
+
+        <form method="post" action="{% url 'tests:start_test' test.id %}">
+            {% csrf_token %}
+            <button type="submit" class="start-test-btn">
+                <i class="bi bi-play-fill"></i>
+                Начать тест
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

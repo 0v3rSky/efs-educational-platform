@@ -1,0 +1,27 @@
+{% extends 'website/base.html' %}
+{% block title %}Мини-тест: {{ quest.title }}{% endblock %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4 bg-light" style="max-width: 700px; width: 100%; border-radius: 18px;">
+        <div class="mb-3 text-muted">Вопрос {{ step|add:1 }} из {{ total }}</div>
+        <h2 class="fw-bold mb-4 text-dark">{{ question.text }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for ans in question.answers.all %}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="answer" id="a{{ ans.id }}" value="{{ ans.id }}" {% if selected == ans.id|stringformat:'s' %}checked{% endif %}>
+                    <label class="form-check-label" for="a{{ ans.id }}">{{ ans.text }}</label>
+                </div>
+            {% endfor %}
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% if prev_step is not None %}{% url 'quests:quest_quiz_step' quest.id prev_step %}{% else %}#{% endif %}" class="btn btn-outline-secondary {% if prev_step is None %}disabled{% endif %}">Назад</a>
+                {% if next_step is not None %}
+                    <button type="submit" class="btn btn-primary">Вперёд</button>
+                {% else %}
+                    <button type="submit" class="btn btn-success">Завершить тест</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

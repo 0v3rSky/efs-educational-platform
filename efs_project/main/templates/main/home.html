@@ -1,0 +1,159 @@
+{% extends 'website/base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        transition: transform 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .test-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .test-item:last-child {
+        border-bottom: none;
+    }
+    .test-info {
+        flex-grow: 1;
+    }
+    .test-score {
+        margin-left: 15px;
+        white-space: nowrap;
+    }
+    .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container py-5">
+    <h1 class="mb-4">Добро пожаловать, {{ user.first_name|default:user.username }}!</h1>
+    
+    <!-- Статистика -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Прогресс в курсах</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Завершено курсов:</span>
+                        <strong>{{ completed_courses|length }}</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ completed_courses|length }}0%" aria-valuenow="{{ completed_courses|length }}" aria-valuemin="0" aria-valuemax="10"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Прогресс в тестах</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Пройдено тестов:</span>
+                        <strong>{{ completed_tests_count }} из {{ total_tests }}</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ tests_percentage }}%" aria-valuenow="{{ completed_tests_count }}" aria-valuemin="0" aria-valuemax="{{ total_tests }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Пройденные курсы -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Пройденные курсы</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% if completed_courses %}
+                        {% for uc in completed_courses %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'course_detail' uc.course.id %}">{{ uc.course.title }}</a>
+                            <span class="badge bg-success">{{ uc.completed_at|date:"d.m.Y" }}</span>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item text-muted">Нет завершённых курсов</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <!-- Пройденные тесты -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Пройденные тесты</h4>
+                </div>
+                <div class="card-body p-0">
+                    {% if completed_tests %}
+                        {% for tr in completed_tests %}
+                        <div class="test-item">
+                            <div class="test-info">
+                                <a href="{% url 'tests:test_detail' tr.test.id %}">{{ tr.test.title }}</a>
+                                <div class="text-muted small">
+                                    Пройден: {{ tr.completed_at|date:"d.m.Y" }}
+                                </div>
+                            </div>
+                            <div class="test-score">
+                                <span class="badge bg-success">Набрано баллов: {{ tr.score }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="p-3 text-muted">Нет успешно пройденных тестов</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Новости -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Новости платформы</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% if news %}
+                        {% for n in news %}
+                        <li class="list-group-item">
+                            <strong>{{ n.title }}</strong>
+                            <span class="text-muted small">({{ n.created_at|date:"d.m.Y H:i" }})</span>
+                            <div class="mt-1">{{ n.content|truncatewords:30 }}</div>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item text-muted">Пока нет новостей</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <!-- Рекомендации -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Рекомендуем</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><a href="{% url 'course_list' %}">Выбрать новый курс</a></li>
+                        <li><a href="{% url 'tests:test_list' %}">Попробовать тесты</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

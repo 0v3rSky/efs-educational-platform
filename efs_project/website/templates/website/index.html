@@ -1,0 +1,77 @@
+{% extends 'website/base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+// ... existing styles ...
+
+<div class="container py-5">
+    {% if user.is_authenticated and user_stats %}
+    <div class="user-stats mb-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ваш прогресс в курсах</h5>
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Записано на курсы:</span>
+                                <span class="stat-value">{{ user_stats.enrolled_courses }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Завершено курсов:</span>
+                                <span class="stat-value">{{ user_stats.completed_courses }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ваш прогресс в тестах</h5>
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Всего тестов:</span>
+                                <span class="stat-value">{{ user_stats.total_tests }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Пройдено тестов:</span>
+                                <span class="stat-value">{{ user_stats.completed_tests }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if user_stats.recent_test_results %}
+        <div class="recent-tests mt-4">
+            <h4>Последние пройденные тесты</h4>
+            <div class="row">
+                {% for result in user_stats.recent_test_results %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ result.test.title }}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Пройден: {{ result.completed_at|date:"d.m.Y" }}
+                                </small>
+                            </p>
+                            <div class="test-result">
+                                <span class="badge bg-success">Набрано баллов: {{ result.score }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    // ... rest of the existing content ...
+</div>
+{% endblock %} 

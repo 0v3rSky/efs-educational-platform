@@ -1,0 +1,241 @@
+{% extends 'website/base.html' %}
+
+{% block title %}Результаты теста: {{ result.test.title }}{% endblock %}
+
+{% block content %}
+<style>
+    .result-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+    .result-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    .test-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .result-status {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+    .status-passed {
+        background: #d4edda;
+        color: #155724;
+    }
+    .status-failed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    .result-summary {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    .summary-item {
+        text-align: center;
+    }
+    .summary-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    .summary-label {
+        font-size: 14px;
+        color: #6c757d;
+    }
+    .questions-container {
+        margin-top: 30px;
+    }
+    .question-item {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+    }
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .question-text {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+    .question-points {
+        font-size: 14px;
+        color: #6c757d;
+    }
+    .answer-section {
+        margin-top: 15px;
+    }
+    .answer-label {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+    .answer-text {
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+    .answer-correct {
+        background: #d4edda;
+        color: #155724;
+    }
+    .answer-incorrect {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .back-button:hover {
+        background: #0b5ed7;
+        color: white;
+    }
+</style>
+
+<div class="container">
+    <div class="result-container">
+        <div class="result-header">
+            <h1 class="test-title">{{ result.test.title }}</h1>
+            <div class="result-status {% if result.passed %}status-passed{% else %}status-failed{% endif %}">
+                {% if result.passed %}
+                    Тест пройден успешно!
+                {% else %}
+                    Тест не пройден
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="result-summary">
+            <div class="summary-item">
+                <div class="summary-value">{{ result.score }}</div>
+                <div class="summary-label">Набрано баллов</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{{ result.test.passing_score }}%</div>
+                <div class="summary-label">Проходной балл</div>
+            </div>
+            {% if result.passed %}
+            <div class="summary-item">
+                <div class="summary-value">+{{ result.test.points }}</div>
+                <div class="summary-label">Получено очков</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="questions-container">
+            {% for answer in text_answers %}
+            <div class="question-item">
+                <div class="question-header">
+                    <div class="question-text">{{ answer.question.text }}</div>
+                    <div class="question-points">{{ answer.question.points }} баллов</div>
+                </div>
+                <div class="answer-section">
+                    <div class="answer-label">Ваш ответ:</div>
+                    <div class="answer-text {% if answer.answer_text|lower == answer.question.correct_answer|lower %}answer-correct{% else %}answer-incorrect{% endif %}">
+                        {{ answer.answer_text }}
+                    </div>
+                    {% if answer.answer_text|lower != answer.question.correct_answer|lower %}
+                    <div class="answer-label">Правильный ответ:</div>
+                    <div class="answer-text answer-correct">
+                        {{ answer.question.correct_answer }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for answer in single_choice_answers %}
+            <div class="question-item">
+                <div class="question-header">
+                    <div class="question-text">{{ answer.question.text }}</div>
+                    <div class="question-points">{{ answer.question.points }} баллов</div>
+                </div>
+                <div class="answer-section">
+                    <div class="answer-label">Ваш ответ:</div>
+                    <div class="answer-text {% if answer.selected_choice.is_correct %}answer-correct{% else %}answer-incorrect{% endif %}">
+                        {{ answer.selected_choice.text }}
+                    </div>
+                    {% if not answer.selected_choice.is_correct %}
+                    <div class="answer-label">Правильный ответ:</div>
+                    <div class="answer-text answer-correct">
+                        {% for choice in answer.question.choices.all %}
+                            {% if choice.is_correct %}
+                                {{ choice.text }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for answer in multiple_choice_answers %}
+            <div class="question-item">
+                <div class="question-header">
+                    <div class="question-text">{{ answer.question.text }}</div>
+                    <div class="question-points">{{ answer.question.points }} баллов</div>
+                </div>
+                <div class="answer-section">
+                    <div class="answer-label">Ваши ответы:</div>
+                    {% for choice in answer.selected_choices.all %}
+                    <div class="answer-text {% if choice.is_correct %}answer-correct{% else %}answer-incorrect{% endif %}">
+                        {{ choice.text }}
+                    </div>
+                    {% endfor %}
+                    {% if not answer.is_correct %}
+                    <div class="answer-label">Правильные ответы:</div>
+                    {% for choice in answer.question.choices.all %}
+                        {% if choice.is_correct %}
+                        <div class="answer-text answer-correct">
+                            {{ choice.text }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{% url 'tests:test_list' %}" class="back-button">
+                <i class="bi bi-arrow-left"></i>
+                Вернуться к списку тестов
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

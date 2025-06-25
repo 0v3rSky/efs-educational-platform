@@ -1,0 +1,176 @@
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Финансовая грамотность, экономика, фондовый рынок</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+            min-height: 100vh;
+        }
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-img {
+            max-width: 600px;
+            border-radius: 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+        .hero-content {
+            max-width: 500px;
+        }
+        .navbar-custom {
+            background: transparent;
+            box-shadow: none;
+        }
+        .btn-auth {
+            min-width: 120px;
+        }
+        .feature-card {
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            background: #fff;
+            padding: 24px 18px;
+            margin-bottom: 24px;
+            height: 100%;
+        }
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; text-align: center; }
+            .hero-img { margin-bottom: 32px; }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#" style="font-size: 1.5rem;">FiCore</a>
+        <div class="ms-auto d-flex gap-2">
+            <button class="btn btn-outline-primary btn-auth" data-bs-toggle="modal" data-bs-target="#loginModal">Войти</button>
+            <button class="btn btn-primary btn-auth" data-bs-toggle="modal" data-bs-target="#signupModal">Зарегистрироваться</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container hero mt-5 mb-5">
+    <div class="row align-items-center justify-content-center w-100">
+        <div class="col-lg-6 hero-content">
+            <h1 class="display-5 fw-bold mb-4">FiCore</h1>
+            <p class="lead mb-4">Платформа для тех, кто хочет разбираться в финансах, инвестировать осознанно и уверенно управлять своими деньгами. Курсы, тесты, интерактивные задания и многое другое — всё для вашего финансового роста!</p>
+            <ul class="list-unstyled mb-4">
+                <li class="mb-2"><span class="badge bg-primary me-2">✓</span> Современные курсы по экономике и инвестициям</li>
+                <li class="mb-2"><span class="badge bg-primary me-2">✓</span> Тесты для закрепления знаний</li>
+                <li class="mb-2"><span class="badge bg-primary me-2">✓</span> Удобный личный кабинет</li>
+                <li class="mb-2"><span class="badge bg-primary me-2">✓</span> Всё бесплатно и онлайн</li>
+            </ul>
+        </div>
+        <div class="col-lg-5 text-center">
+            <img src="/media/landing_image.png" alt="Финансовое обучение" class="hero-img img-fluid mb-1">
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card h-100 text-center">
+                <img src="https://img.icons8.com/ios-filled/100/4a90e2/money-bag.png" width="60" class="mb-3" alt="Финансовая грамотность">
+                <h5 class="fw-bold mb-2">Финансовая грамотность</h5>
+                <p>Научитесь управлять личным бюджетом, избегать долгов и строить финансовую подушку безопасности.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card h-100 text-center">
+                <img src="https://img.icons8.com/ios-filled/100/4a90e2/bank.png" width="60" class="mb-3" alt="Экономика">
+                <h5 class="fw-bold mb-2">Экономика</h5>
+                <p>Поймите, как работает экономика, что влияет на инфляцию, курсы валют и как принимать обоснованные решения.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card h-100 text-center">
+                <img src="https://img.icons8.com/ios-filled/100/4a90e2/line-chart.png" width="60" class="mb-3" alt="Фондовый рынок">
+                <h5 class="fw-bold mb-2">Фондовый рынок</h5>
+                <p>Разберитесь в акциях, облигациях, инвестиционных стратегиях и начните инвестировать с умом.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center text-muted py-4">
+    &copy; 2025 FiCore — Образовательная платформа по финансам и экономике
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Войти</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          {{ login_form.non_field_errors }}
+          <div class="mb-3">
+            <label class="form-label">Email или имя пользователя</label>
+            {{ login_form.username|add_class:"form-control" }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Пароль</label>
+            {{ login_form.password|add_class:"form-control" }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100">Войти</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'signup' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="signupModalLabel">Зарегистрироваться</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          {{ signup_form.non_field_errors }}
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            {{ signup_form.email|add_class:"form-control" }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Имя пользователя</label>
+            {{ signup_form.username|add_class:"form-control" }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Пароль</label>
+            {{ signup_form.password1|add_class:"form-control" }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Подтвердите пароль</label>
+            {{ signup_form.password2|add_class:"form-control" }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html> 

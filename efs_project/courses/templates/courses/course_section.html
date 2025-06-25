@@ -1,0 +1,42 @@
+{% extends 'website/base.html' %}
+{% block content %}
+<div class="container py-5 d-flex">
+    <div class="flex-grow-1">
+        <div class="card bg-light text-dark shadow p-4 mb-4">
+            <h2 class="fw-bold mb-3">{{ section.title }}</h2>
+            <div class="mb-4" style="font-size: 1.1rem;">{{ section.content|safe }}</div>
+            {% if next_section_id %}
+                <a href="{% url 'course_section' course.id next_section_id %}" class="btn btn-primary">К следующему пункту</a>
+            {% else %}
+                {% if not is_completed %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="complete_course" class="btn btn-success w-100 mb-2">Подтвердить завершение курса</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-success text-center fw-bold fs-4 mb-4" role="alert">
+                        Курс завершён!
+                    </div>
+                {% endif %}
+                {% if course.test %}
+                    <a href="{% url 'test_detail' course.test.id %}" class="btn btn-outline-primary w-100 mb-2 fs-5">Пройти тест по курсу</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="ms-4" style="min-width: 260px;">
+        <div class="card bg-dark text-white shadow-sm p-3">
+            <h5 class="fw-bold mb-3">Пункты курса</h5>
+            <ul class="nav flex-column">
+                {% for s in sections %}
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'course_section' course.id s.id %}" class="nav-link {% if s.id == section.id %}active fw-bold text-primary{% endif %} text-white">
+                            {{ s.title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

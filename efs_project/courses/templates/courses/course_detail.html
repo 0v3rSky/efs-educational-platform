@@ -1,0 +1,84 @@
+{% extends 'website/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-lg mb-4">
+                <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 300px; object-fit: cover;">
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ course.title }}</h1>
+                    <p class="card-text">{{ course.description }}</p>
+                    
+                    {% if is_completed %}
+                    <div class="alert alert-success mb-4">
+                        <h5 class="alert-heading">Курс пройден!</h5>
+                        
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex gap-3">
+                        {% if not is_enrolled %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-lg">Записаться на курс</button>
+                            </form>
+                        {% else %}
+                            {% if sections %}
+                                <a href="{% url 'course_section' course.id sections.0.id %}" class="btn btn-success btn-lg">Продолжить обучение</a>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{% url 'course_list' %}" class="btn btn-outline-secondary btn-lg">Назад к списку</a>
+                        {% if is_completed and course.test %}
+                            <a href="{% url 'test_detail' course.test.id %}" class="btn btn-primary btn-lg">Пройти тест по курсу</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="sections" class="card shadow-lg">
+                <div class="card-header bg-white">
+                    <h2 class="h4 mb-0">Содержание курса</h2>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for section in sections %}
+                        <div class="list-group-item">
+                            <h3 class="h5 mb-2 mb-0">{{ section.title }}</h3>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-white">
+                    <h3 class="h5 mb-0">Информация о курсе</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <strong>Категория:</strong> {{ course.category }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Сложность:</strong> 
+                            <span class="badge bg-{{ course.difficulty|lower }}">
+                                {{ course.difficulty }}
+                            </span>
+                        </li>
+                        <li class="mb-2">
+                            <strong>Количество секций:</strong> {{ sections|length }}
+                        </li>
+                        {% if is_completed %}
+                        <li class="mb-2">
+                            <strong>Дата завершения:</strong><br>
+                            {{ completion.completed_at|date:"d.m.Y H:i" }}
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

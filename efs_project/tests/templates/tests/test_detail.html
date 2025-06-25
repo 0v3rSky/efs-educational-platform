@@ -1,0 +1,54 @@
+{% extends 'website/base.html' %}
+
+{% block title %}{{ test.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4">{{ test.title }}</h1>
+            <div class="mb-4">
+                <span class="badge bg-primary me-2">{{ test.category }}</span>
+                <span class="badge bg-secondary me-2">{{ test.difficulty }}</span>
+                <span class="badge bg-info">Время: {{ test.time_limit }} мин</span>
+            </div>
+            <p class="lead mb-4">{{ test.description }}</p>
+            
+            {% if test.image %}
+            <img src="{{ test.image.url }}" alt="{{ test.title }}" class="img-fluid rounded mb-4">
+            {% endif %}
+
+            {% if not test.is_completed %}
+                <div class="alert alert-info">
+                    <h4 class="alert-heading">Готовы начать?</h4>
+                    <p>Этот тест содержит {{ test.questions.count }} вопросов. У вас будет {{ test.time_limit }} минут на его выполнение.</p>
+                    <hr>
+                    <p class="mb-0">
+                        <a href="{% url 'tests:test_detail' test.id %}" class="btn btn-primary">
+                            Начать тест
+                        </a>
+                    </p>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Тест пройден!</h4>
+                    <p>Вы уже прошли этот тест. Хотите попробовать снова?</p>
+                    <hr>
+                    <p class="mb-0">
+                        <a href="{% url 'tests:start_test' test.id %}" class="btn btn-primary">
+                            Пройти снова
+                        </a>
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="test-actions">
+                <a href="{% url 'tests:start_test' test.id %}" class="start-test-btn">
+                    <i class="bi bi-play-fill"></i>
+                    Пройти тест
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

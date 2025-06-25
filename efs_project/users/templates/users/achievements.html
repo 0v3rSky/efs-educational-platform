@@ -1,0 +1,39 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}Достижения{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Достижения</h1>
+    
+    <div class="row">
+        {% for achievement in all_achievements %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 {% if achievement in user_achievements %}border-success{% else %}border-secondary{% endif %}">
+                    <div class="card-body text-center">
+                        <img src="{{ achievement.icon.url }}" alt="{{ achievement.name }}" 
+                             class="img-fluid mb-3" style="max-width: 100px; height: auto;">
+                        <h5 class="card-title">{{ achievement.name }}</h5>
+                        <p class="card-text">{{ achievement.description }}</p>
+                        {% if achievement in user_achievements %}
+                            <span class="badge bg-success">Получено</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Не получено</span>
+                        {% endif %}
+                        <div class="mt-2">
+                            <small class="text-muted">+{{ achievement.points_reward }} очков</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Достижения пока не добавлены в систему.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

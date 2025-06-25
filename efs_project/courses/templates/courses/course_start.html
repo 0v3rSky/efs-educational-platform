@@ -1,0 +1,30 @@
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4 bg-dark text-white" style="max-width: 700px; width: 100%; border-radius: 18px;">
+        <div class="row g-4 align-items-center">
+            <div class="col-md-5 text-center">
+                <img src="{{ course.image.url }}" alt="{{ course.title }}" class="img-fluid rounded-4 mb-3" style="max-height: 320px; object-fit: cover; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
+            </div>
+            <div class="col-md-7">
+                <h1 class="fw-bold mb-3">{{ course.title }}</h1>
+                <div class="mb-2">
+                    <span class="badge bg-primary me-2">{{ course.category }}</span>
+                    <span class="badge bg-secondary">{{ course.get_difficulty_display }}</span>
+                </div>
+                <p class="mt-3 mb-4" style="font-size: 1.1rem; line-height: 1.6;">{{ course.description }}</p>
+                <div class="d-flex gap-3">
+                    {% if is_enrolled %}
+                        <a href="{% url 'course_start' course.id %}" class="btn btn-success btn-lg px-4">Начать курс</a>
+                    {% else %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-lg px-4">Записаться на курс</button>
+                        </form>
+                    {% endif %}
+                    <a href="{% url 'course_list' %}" class="btn btn-outline-light btn-lg px-4">Назад к списку</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'website/base.html' %}
+{% block title %}{{ quest.title }}{% endblock %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4 bg-light" style="max-width: 700px; width: 100%; border-radius: 18px;">
+        <h2 class="fw-bold mb-3 text-dark">{{ quest.title }}</h2>
+        <div class="mb-3">{{ quest.description }}</div>
+        <div class="mb-4">
+            <span class="badge bg-primary me-2">Секций: {{ sections|length }}</span>
+            {% if quest.quiz %}
+                <span class="badge bg-warning text-dark">Вопросов: {{ quest.quiz.questions.count }}</span>
+            {% else %}
+                <span class="badge bg-warning text-dark">Вопросов: 0</span>
+            {% endif %}
+        </div>
+        {% if sections %}
+        <div class="text-end">
+            <a href="{% url 'quests:quest_section' quest.id 0 %}" class="btn btn-success btn-lg">Начать квест</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

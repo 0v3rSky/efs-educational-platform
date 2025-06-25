@@ -1,0 +1,62 @@
+[
+    {
+        "model": "users.achievement",
+        "pk": 1,
+        "fields": {
+            "name": "Начинающий ученик",
+            "description": "Завершите 5 курсов",
+            "icon": "achievements/beginner.png",
+            "condition_type": "courses_completed",
+            "condition_value": 5,
+            "points_reward": 100
+        }
+    },
+    {
+        "model": "users.achievement",
+        "pk": 2,
+        "fields": {
+            "name": "Опытный ученик",
+            "description": "Завершите 10 курсов",
+            "icon": "achievements/experienced.png",
+            "condition_type": "courses_completed",
+            "condition_value": 10,
+            "points_reward": 200
+        }
+    },
+    {
+        "model": "users.achievement",
+        "pk": 3,
+        "fields": {
+            "name": "Мастер тестов",
+            "description": "Завершите 5 тестов",
+            "icon": "achievements/test_master.png",
+            "condition_type": "tests_completed",
+            "condition_value": 5,
+            "points_reward": 150
+        }
+    },
+    {
+        "model": "users.achievement",
+        "pk": 4,
+        "fields": {
+            "name": "Идеальный результат",
+            "description": "Получите 100% на любом тесте",
+            "icon": "achievements/perfect.png",
+            "condition_type": "perfect_score",
+            "condition_value": 1,
+            "points_reward": 100
+        }
+    },
+    {
+        "model": "users.achievement",
+        "pk": 5,
+        "fields": {
+            "name": "Мастер всех курсов",
+            "description": "Завершите все доступные курсы",
+            "icon": "achievements/master.png",
+            "condition_type": "all_courses",
+            "condition_value": 0,
+            "points_reward": 500
+        }
+    }
+] 

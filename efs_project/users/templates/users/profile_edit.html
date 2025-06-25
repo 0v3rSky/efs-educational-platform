@@ -1,0 +1,35 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-white">Редактировать профиль</h2>
+    <form method="POST" enctype="multipart/form-data" class="bg-dark p-4 rounded shadow text-white">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ u_form.username.label_tag }} {{ u_form.username }}
+        </div>
+        <div class="mb-3">
+            {{ p_form.image.label_tag }} {{ p_form.image }}
+        </div>
+        <!-- Аватар -->
+        <div class="form-group mb-3">
+            <label for="{{ profile_form.avatar.id_for_label }}">Фото профиля</label>
+            {{ profile_form.avatar }}
+        </div>
+
+        <!-- Имя -->
+        <div class="form-group mb-3">
+            <label for="{{ user_form.username.id_for_label }}">Имя пользователя</label>
+            {{ user_form.username }}
+        </div>
+
+        <!-- Почта -->
+        <div class="form-group mb-3">
+            <label for="{{ user_form.email.id_for_label }}">Email</label>
+            {{ user_form.email }}
+        </div>
+        <button type="submit" class="btn btn-success">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

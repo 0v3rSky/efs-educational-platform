@@ -1,0 +1,396 @@
+{% extends 'website/base.html' %}
+{% load course_tags %}
+
+{% block title %}Курсы{% endblock %}
+
+{% block content %}
+  <style>
+      .course-card {
+          width: 200px;
+          margin: 15px;
+          border-radius: 15px;
+          overflow: hidden;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          text-decoration: none;
+          color: inherit;
+          display: block;
+          transition: all 0.3s ease;
+          background: white;
+      }
+      .course-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+      .course-card.completed {
+          opacity: 0.7;
+          filter: grayscale(0.5);
+      }
+      .course-card.completed:hover {
+          opacity: 1;
+          filter: grayscale(0);
+      }
+      .course-card img {
+          width: 100%;
+          height: 120px;
+          object-fit: cover;
+      }
+      .course-card-body {
+          padding: 12px;
+          position: relative;
+      }
+      .course-card.completed .course-card-body::after {
+          content: '✓';
+          position: absolute;
+          top: 8px;
+          right: 12px;
+          color: #28a745;
+          font-size: 20px;
+          font-weight: bold;
+      }
+      .category-header {
+          margin-top: 40px;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #eee;
+      }
+      .course-title {
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 8px;
+          color: #333;
+      }
+      .course-description {
+          font-size: 13px;
+          color: #666;
+          margin-bottom: 8px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+      }
+      .course-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 12px;
+          color: #888;
+      }
+      .course-difficulty {
+          padding: 2px 7px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 500;
+      }
+      .difficulty-легкий {
+          background: #e3fcef;
+          color: #00a854;
+      }
+      .difficulty-средний {
+          background: #fff7e6;
+          color: #fa8c16;
+      }
+      .difficulty-сложный {
+          background: #fff1f0;
+          color: #f5222d;
+      }
+      .difficulty-header {
+          margin-top: 20px;
+          margin-bottom: 10px;
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+      .view-all-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #f8f9fa;
+          border: 1px solid #e0e0e0;
+          border-radius: 20px;
+          color: #222;
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 500;
+          padding: 3px 12px 3px 10px;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+          transition: background 0.2s, border 0.2s, color 0.2s;
+          cursor: pointer;
+      }
+      .view-all-btn:hover {
+          background: #e9ecef;
+          border-color: #bdbdbd;
+          color: #0d6efd;
+      }
+      .course-completion-date {
+          font-size: 11px;
+      }
+  </style>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="side-panel" id="sidePanel">
+      <div class="side-panel-header">
+          <h4 id="panelTitle"></h4>
+          <span class="close-panel" onclick="closePanel()">&times;</span>
+      </div>
+      <div id="panelContent"></div>
+  </div>
+
+  <div class="container py-5">
+      {% for category, difficulties_data in categories_data %}
+          <div class="category-header">
+              <h2 class="mb-0">{{ category }}</h2>
+          </div>
+          {% for difficulty, courses in difficulties_data %}
+              {% if courses %}
+                  <div class="difficulty-header">
+                      <span>{{ difficulty }}</span>
+                      <button class="view-all-btn" onclick="showAllCourses('{{ category }}', '{{ difficulty }}')">
+                          Посмотреть все
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M6.646 12.354a.5.5 0 0 1 0-.708L9.293 8 6.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z"/></svg>
+                      </button>
+                  </div>
+                  <div class="d-flex flex-wrap">
+                      {% for course in courses|slice:":5" %}
+                          <a href="{% url 'course_detail' course.id %}" class="course-card {% if course.is_completed %}completed{% endif %}">
+                              <img src="{{ course.image.url }}" alt="{{ course.title }}">
+                              <div class="course-card-body">
+                                  <div class="course-title">{{ course.title }}</div>
+                                  <div class="course-description">{{ course.description|truncatechars:100 }}</div>
+                                  <div class="course-meta">
+                                      <span class="course-difficulty difficulty-{{ course.difficulty|lower }}">
+                                          {{ course.difficulty }}
+                                      </span>
+                                      <span>{{ course.sections.count }} секций</span>
+                                  </div>
+                                  {% if course.is_completed %}
+                                  <div class="course-completion-date text-muted mt-1">
+                                      Завершен: {{ course.completion_date|date:"d.m.Y" }}
+                                  </div>
+                                  {% endif %}
+                              </div>
+                          </a>
+                      {% endfor %}
+                  </div>
+              {% endif %}
+          {% endfor %}
+      {% endfor %}
+  </div>
+
+  <style>
+      .overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.5);
+          display: none;
+          z-index: 999;
+      }
+      .overlay.active {
+          display: block;
+      }
+      .side-panel {
+          position: fixed;
+          top: 0;
+          right: -400px;
+          width: 400px;
+          height: 100vh;
+          background: white;
+          box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+          transition: right 0.3s ease;
+          z-index: 1000;
+          overflow-y: auto;
+      }
+      .side-panel.active {
+          right: 0;
+      }
+      .side-panel-header {
+          padding: 20px;
+          border-bottom: 1px solid #eee;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: sticky;
+          top: 0;
+          background: white;
+          z-index: 1;
+      }
+      .close-panel {
+          font-size: 24px;
+          cursor: pointer;
+          color: #666;
+      }
+      .side-panel-content {
+          padding: 20px;
+      }
+      .side-panel-course {
+          display: flex;
+          padding: 15px;
+          margin-bottom: 15px;
+          border-radius: 10px;
+          background: white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          text-decoration: none;
+          color: inherit;
+          transition: all 0.2s ease;
+      }
+      .side-panel-course:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      .side-panel-course.completed {
+          opacity: 0.7;
+      }
+      .side-panel-course.completed:hover {
+          opacity: 1;
+      }
+      .side-panel-course img {
+          width: 120px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: 8px;
+          margin-right: 15px;
+      }
+      .side-panel-course-info {
+          flex: 1;
+          min-width: 0;
+      }
+      .side-panel-course-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 8px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+      }
+      .side-panel-course-description {
+          font-size: 13px;
+          color: #666;
+          margin-bottom: 8px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+      }
+      .side-panel-course-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 12px;
+          color: #888;
+      }
+      .side-panel-course-difficulty {
+          padding: 2px 7px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 500;
+      }
+      .side-panel-course-completion {
+          font-size: 11px;
+          color: #28a745;
+      }
+  </style>
+
+  <script>
+      // Создаем объект для хранения всех курсов
+      const allCourses = {
+          {% for category, difficulties_data in categories_data %}
+              "{{ category }}": {
+                  {% for difficulty, courses in difficulties_data %}
+                      "{{ difficulty }}": [
+                          {% for course in courses %}
+                              {
+                                  id: "{{ course.id }}",
+                                  title: "{{ course.title }}",
+                                  description: "{{ course.description }}",
+                                  difficulty: "{{ course.difficulty }}",
+                                  sections_count: "{{ course.sections.count }}",
+                                  image: "{{ course.image.url }}",
+                                  is_completed: {% if course.is_completed %}true{% else %}false{% endif %},
+                                  completion_date: "{% if course.completion_date %}{{ course.completion_date|date:'d.m.Y' }}{% endif %}"
+                              }{% if not forloop.last %},{% endif %}
+                          {% endfor %}
+                      ]{% if not forloop.last %},{% endif %}
+                  {% endfor %}
+              }{% if not forloop.last %},{% endif %}
+          {% endfor %}
+      };
+
+      function truncateText(text, maxLength = 100) {
+          if (text.length <= maxLength) return text;
+          return text.substring(0, maxLength) + '...';
+      }
+
+      function showAllCourses(category, difficulty) {
+          const panel = document.getElementById('sidePanel');
+          const overlay = document.getElementById('overlay');
+          const panelTitle = document.getElementById('panelTitle');
+          const panelContent = document.getElementById('panelContent');
+          
+          // Устанавливаем заголовок
+          panelTitle.textContent = `${category} - ${difficulty}`;
+          
+          // Получаем все курсы для данной категории и сложности
+          const courses = allCourses[category][difficulty];
+          
+          // Очищаем и заполняем содержимое панели
+          panelContent.innerHTML = '';
+          const coursesContainer = document.createElement('div');
+          coursesContainer.className = 'side-panel-content';
+          
+          courses.forEach(course => {
+              const courseCard = document.createElement('a');
+              courseCard.href = `/courses/${course.id}/`;
+              courseCard.className = `side-panel-course ${course.is_completed ? 'completed' : ''}`;
+              
+              let cardContent = `
+                  <img src="${course.image}" alt="${course.title}">
+                  <div class="side-panel-course-info">
+                      <div class="side-panel-course-title">${course.title}</div>
+                      <div class="side-panel-course-description">${truncateText(course.description)}</div>
+                      <div class="side-panel-course-meta">
+                          <span class="side-panel-course-difficulty difficulty-${course.difficulty.toLowerCase()}">
+                              ${course.difficulty}
+                          </span>
+                          <span>${course.sections_count} секций</span>
+                      </div>
+              `;
+              
+              if (course.is_completed) {
+                  cardContent += `
+                      <div class="side-panel-course-completion">
+                          Завершен: ${course.completion_date}
+                      </div>
+                  `;
+              }
+              
+              cardContent += '</div>';
+              courseCard.innerHTML = cardContent;
+              coursesContainer.appendChild(courseCard);
+          });
+          
+          panelContent.appendChild(coursesContainer);
+          
+          // Показываем панель и оверлей
+          panel.classList.add('active');
+          overlay.classList.add('active');
+      }
+      
+      function closePanel() {
+          const panel = document.getElementById('sidePanel');
+          const overlay = document.getElementById('overlay');
+          
+          panel.classList.remove('active');
+          overlay.classList.remove('active');
+      }
+      
+      // Закрытие панели при клике на оверлей
+      document.getElementById('overlay').addEventListener('click', closePanel);
+  </script>
+{% endblock %}

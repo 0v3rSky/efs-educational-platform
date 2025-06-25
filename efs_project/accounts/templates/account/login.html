@@ -1,0 +1,44 @@
+{% extends 'website/base.html' %}
+{% load i18n %}
+{% load allauth account %}
+{% load socialaccount %}
+{% load widget_tweaks %}
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="card shadow p-4" style="max-width: 400px; width: 100%; border-radius: 18px;">
+        <h2 class="mb-4 text-center">Log in</h2>
+        <form method="post" class="mb-3">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="mb-3">
+                <label class="form-label">Email or Username</label>
+                {{ form.login|add_class:"form-control" }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                {{ form.password|add_class:"form-control" }}
+            </div>
+            <button type="submit" class="btn btn-dark w-100 mb-2">Log In</button>
+        </form>
+        <div class="text-center mb-2">
+            <a href="{% url 'account_reset_password' %}">Forgot password?</a>
+        </div>
+        <hr>
+        <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark w-100 mb-2">
+            <img src="https://developers.google.com/identity/images/g-logo.png" width="20" class="me-2"> Sign in with Google
+        </a>
+        <div class="text-center mt-3">
+            Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+    {% if PASSKEY_LOGIN_ENABLED %}
+        {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
+    {% endif %}
+{% endblock %}
